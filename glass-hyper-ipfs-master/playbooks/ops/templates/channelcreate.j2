@@ -1,0 +1,11 @@
+#!/bin/bash
+# Script to create channel block 0 and then create channel
+cp $FABRIC_CFG_PATH/core.yaml /vars/core.yaml
+cd /vars
+export FABRIC_CFG_PATH=/vars
+configtxgen -profile OrgChannel \
+  -outputCreateChannelTx {{ CHANNEL_NAME }}.tx -channelID {{ CHANNEL_NAME}}
+
+{% include "envsetting.j2" %}
+peer channel create -c {{ CHANNEL_NAME }} -f {{ CHANNEL_NAME }}.tx -o $ORDERER_ADDRESS \
+  --cafile $ORDERER_TLS_CA --tls

@@ -1,0 +1,20 @@
+[
+   {
+      "name": "collectionGlassResources",
+      "policy": "OR( 'org1-org.member', 'org2-org.member' )",
+      "requiredPeerCount": 0,
+      "maxPeerCount": 3,
+      "blockToLive":30,
+      "memberOnlyRead": true
+   },
+   {
+      "name": "collectionGlassResourcesKeys",
+      "policy": "OR( 'org1-org.member')",
+      "requiredPeerCount": 0,
+      "maxPeerCount": 3,
+      "blockToLive":30,
+      "memberOnlyRead": true
+   }
+  ]
+  
+  

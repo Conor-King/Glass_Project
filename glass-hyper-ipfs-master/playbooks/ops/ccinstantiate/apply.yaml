@@ -1,0 +1,18 @@
+---
+- name: "Select an orderer node"
+  include_tasks: "{{ pjroot }}/playbooks/common/ordererselection.yaml"
+
+- name: Select a peer for chaincode instantiation.
+  set_fact:
+    actingpeer: "{{ allpeers|selectattr('org','equalto',CURRENT_ORG)|list|random }}"
+    isuffix: "{{ (fabric.release is version('2.0', '>='))|ternary('2', '')}}"
+
+- name: Create chaincode instantiate script
+  template:
+    src: "{{ pjroot }}/playbooks/ops/templates/ccinstantiate{{ isuffix }}.j2"
+    dest: "{{ pjroot }}/vars/run/ccinstantiate.sh"
+    mode: +x
+
+- name: Run the chaincode instantiate script on cli container
+  command: >-
+    docker exec {{ CLINAME }} /vars/run/ccinstantiate.sh

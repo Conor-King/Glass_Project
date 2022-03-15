@@ -1,0 +1,28 @@
+---
+- name: Download scripts
+  get_url:
+    url: "https://raw.githubusercontent.com/hyperledger-labs/minifabric/main/{{ item.src }}"
+    dest: "{{ pjroot }}/vars/{{ item.dest }}"
+  with_items:
+  - "{{ { 'src': 'minifab', 'dest': 'minifab' } }}"
+  - "{{ { 'src': 'minifabwin', 'dest': 'minifab.cmd' } }}"
+
+- name: Pull minifabric docker image
+  command: >-
+    docker pull hyperledgerlabs/minifab:latest
+  register: theresult
+
+- name: "Minifabric update succeeded"
+  when: theresult.rc == 0
+  debug:
+    msg: |
+      "Latest Windows script is vars/minifab.cmd"
+      "Latest Linux and OS X script is vars/minifab"
+      "Replace your existing minifab script with the one for your system"
+  tags: [print_action]
+
+- name: "Minifabric update failed"
+  when: theresult.rc != 0
+  debug:
+    msg: "{{ theresult.stdout_lines }}"
+  tags: [print_action]

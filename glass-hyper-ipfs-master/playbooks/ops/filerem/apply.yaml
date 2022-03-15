@@ -1,0 +1,36 @@
+---
+- name: Remove all node volumes
+  command: >-
+    docker volume prune -f
+
+- name: Cleanup temporary files
+  find:
+    path: "{{ pjroot }}/vars"
+    file_type: any
+    patterns: "*"
+    excludes: 'kubeconfig'
+  register: toberemoved
+
+- name: Ansible remove file glob
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ toberemoved.files }}"
+
+- name: set two values
+  set_fact:
+    LB: "{"
+    RB: "}"
+
+- name: Get all chaincode container images
+  command: >-
+    docker images --format "{{ LB }}{{ LB }} .ID {{ RB }}{{ RB }}"
+    -f label=org.hyperledger.fabric.chaincode.type
+  register: toberemoved
+  ignore_errors: yes
+
+- name: Remove all chaincode images
+  when: (toberemoved.stdout_lines|length) > 0
+  command: >-
+    docker rmi -f {{ toberemoved.stdout_lines|join(' ') }}
+  ignore_errors: yes

@@ -1,0 +1,18 @@
+---
+- name: "Ensure explorer directory exists"
+  file:
+    path: "{{ pjroot }}/vars/explorer"
+    state: "directory"
+
+- name: Shutdown explorer container from docker
+  include_tasks: "dockerapply.yaml"
+  when: ISK8S == false
+
+- name: Shutdown explorer container from k8s
+  include_tasks: "k8sapply.yaml"
+  when: ISK8S == true
+
+- name: "remove explorer directory"
+  file:
+    path: "{{ pjroot }}/vars/explorer"
+    state: "absent"

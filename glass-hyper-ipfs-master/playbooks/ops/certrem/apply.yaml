@@ -1,0 +1,11 @@
+---
+- name: Remove generated files
+  file:
+    path: "{{ pjroot }}/vars/{{ item }}"
+    state: absent
+  with_items:
+    - "crypto-config.yml"
+    - "configtx.yml"
+    - "genesis.block"
+    - "keyfiles"
+    - "run"

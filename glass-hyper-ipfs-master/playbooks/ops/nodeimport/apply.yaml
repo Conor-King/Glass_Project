@@ -1,0 +1,40 @@
+- name: Get external node endpoints and certs
+  include_vars:
+    file: "{{ pjroot }}/vars/endpoints.yaml"
+    name: exnodes
+
+- name: Add external orderers to the orderer list
+  set_fact:
+    ext_orderers: >-
+      {{ ext_orderers | default([]) + [{ 'org':item.org, 'name':item.name, 'fullname': item.fullname, 
+        'type': item.type, 'url':item.url, 'port':item.port, 'mspid':item.mspid }] }}
+    ext_orgattrs: >-
+      {{ ext_orgattrs | default({}) | combine({item.org: {'mspid': item.mspid,
+        'certpath': 'ordererOrganizations'} }) }}
+  with_items: "{{ exnodes.ordererEndpoints }}"
+  no_log: True
+
+- name: Get ca, peer and orderer orgs
+  set_fact:
+    ext_ordererorgs: "{{ ext_orderers | default([]) | map(attribute='org') | list  | unique | sort }}"
+
+- name: Create external node cert directory
+  file:
+    path: "{{ pjroot }}/vars/keyfiles/ordererOrganizations/{{ item }}/tlsca"
+    state: "directory"
+  with_items: "{{ ext_ordererorgs }}"
+  no_log: True
+
+- name: Save external node certificates
+  copy:
+    dest: "{{ pjroot}}/vars/keyfiles/ordererOrganizations/{{ item.org }}/tlsca/tlsca.crt"
+    content: |
+      {{ item.tlsCACerts | b64decode }}
+  with_items: "{{ exnodes.ordererEndpoints }}"
+  no_log: True
+
+- name: Produce the imported node var file
+  copy:
+    dest: "{{ pjroot }}/vars/ext_node_vars.json"
+    content: "{{ {'ext_orderers': ext_orderers, 'ext_ordererorgs': ext_ordererorgs,
+          'ext_orgattrs': ext_orgattrs } | to_nice_json(indent=2) }}"

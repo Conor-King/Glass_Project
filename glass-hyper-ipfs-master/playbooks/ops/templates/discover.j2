@@ -1,0 +1,22 @@
+#!/bin/bash
+# Script to discover endorsers and channel config
+cd /vars
+
+export PEER_TLS_ROOTCERT_FILE=/vars/keyfiles/peerOrganizations/{{ actingpeer.org }}/users/Admin@{{ actingpeer.org }}/tls/ca.crt
+export ADMINPRIVATEKEY=/vars/{{ allkeys['Admin@'+actingpeer.org].pkey }}
+export ADMINCERT=/vars/keyfiles/peerOrganizations/{{ actingpeer.org }}/users/Admin@{{ actingpeer.org }}/msp/signcerts/Admin@{{ actingpeer.org }}-cert.pem
+
+discover endorsers --peerTLSCA $PEER_TLS_ROOTCERT_FILE \
+  --userKey $ADMINPRIVATEKEY \
+  --userCert $ADMINCERT \
+  --MSP {{ actingpeer.mspid }} --channel {{ CHANNEL_NAME }} \
+  --server {{ actingpeer.url }}:{{ actingpeer.port }} \
+  --chaincode {{ CC_NAME }} | jq '.[0]' | \
+  jq 'del(.. | .Identity?)' | jq 'del(.. | .LedgerHeight?)' \
+  > /vars/discover/{{ CHANNEL_NAME }}_{{ CC_NAME }}_endorsers.json
+
+discover config --peerTLSCA $PEER_TLS_ROOTCERT_FILE \
+  --userKey $ADMINPRIVATEKEY \
+  --userCert $ADMINCERT \
+  --MSP {{ actingpeer.mspid }} --channel {{ CHANNEL_NAME }} \
+  --server {{ actingpeer.url }}:{{ actingpeer.port }} > /vars/discover/{{ CHANNEL_NAME }}_config.json

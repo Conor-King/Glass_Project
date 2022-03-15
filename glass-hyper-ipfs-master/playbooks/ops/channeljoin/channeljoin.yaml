@@ -1,0 +1,23 @@
+---
+- name: "Select an orderer node"
+  include_tasks: "{{ pjroot }}/playbooks/common/ordererselection.yaml"
+
+- name: Set the acting peer to be the join peer
+  set_fact:
+    actingpeer: "{{ joinpeer }}"
+
+- name: Create chanel join script
+  template:
+    src: "{{ pjroot }}/playbooks/ops/templates/channeljoin.j2"
+    dest: "{{ pjroot }}/vars/run/channeljoin.{{ actingpeer.fullname }}.sh"
+    mode: +x
+
+- name: Run the channel join script on cli container
+  command: >-
+    docker exec {{ CLINAME }} /vars/run/channeljoin.{{ actingpeer.fullname }}.sh
+  register: result
+
+- name: Set the status flag based on the return value
+  set_fact:
+    status_flag: "{{ (result.rc == 0)|ternary('Success', 'Failure') }}"
+

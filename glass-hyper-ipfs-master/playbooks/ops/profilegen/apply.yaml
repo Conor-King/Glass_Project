@@ -1,0 +1,45 @@
+---
+- name: "Process keys"
+  include_tasks: "{{ pjroot }}/playbooks/common/processkeys.yaml"
+
+- name: Make sure that profiles holding directory exists
+  file:
+    path: "{{ pjroot }}/vars/profiles/vscode/wallets"
+    state: "{{ item }}"
+    mode: 0775
+  with_items:
+    - "absent"
+    - "directory"
+
+- name: Create profiles
+  template:
+    src: "{{ pjroot }}/playbooks/ops/profilegen/templates/{{ item.name }}"
+    dest: "{{ pjroot }}/vars/profiles/{{ item.target }}"
+  with_items:
+    - "{{ {'name': 'pyprofile.j2', 'target': CHANNEL_NAME+'_network_for_pysdk.json'} }}"
+    - "{{ {'name': 'goprofile.j2', 'target': CHANNEL_NAME+'_connection_for_gosdk.json'} }}"
+    - "{{ {'name': 'goprofileyaml.j2', 'target': CHANNEL_NAME+'_connection_for_gosdk.yaml'} }}"
+    - "{{ {'name': 'nodeprofile.j2', 'target': CHANNEL_NAME+'_connection_for_nodesdk.json'} }}"
+    - "{{ {'name': 'nodeprofileyaml.j2', 'target': CHANNEL_NAME+'_connection_for_nodesdk.yaml'} }}"
+    - "{{ {'name': 'javaprofileyaml.j2', 'target': CHANNEL_NAME+'_connection_for_javasdk.yaml'} }}"
+    - "{{ {'name': 'endpoints.j2', 'target': 'endpoints.yaml'} }}"
+    - "{{ {'name': 'anchorpeers.j2', 'target': 'anchorpeers.json'} }}"
+    - "{{ {'name': 'vscodenodefile.j2', 'target': 'vscode/vscodenodefile.json'} }}"
+
+- name: Get all users
+  set_fact:
+    allusers: "{{ allusers|default([]) + [item.value] }}"
+  when: item.value.type == 'users'
+  with_items: "{{ allkeys|dict2items }}"
+
+- name: Create wallets for all users
+  loop: "{{ allusers }}"
+  loop_control:
+    loop_var: walletuser
+  include_tasks: "playbooks/ops/profilegen/walletgen.yaml"
+
+- name: Package wallets and vscode endpints to one file
+  archive:
+    path: "{{ pjroot }}/vars/profiles/vscode"
+    dest: "{{ pjroot }}/vars/vscode.tgz"
+ 
