@@ -1,9 +1,9 @@
 ## How to
 - my go version - 1.17.8
-- curl -o minifab -sL https://tinyurl.com/yxa2q6yr && chmod +x minifab
-- PATH="$(pwd):$PATH" - to add minifab path to your path tempoarily
+- ```curl -o minifab -sL https://tinyurl.com/yxa2q6yr && chmod +x minifab ```
+- ```PATH="$(pwd):$PATH" ``` - to add minifab path to your path tempoarily
 
-1. minifab up - bring up the network (first time it takes around 3-4 mins)
+1. ```minifab up``` - bring up the network (first time it takes around 3-4 mins)
 2. copy the "strings" chaincode from minifabric/chaincodes folder to minifabric/vars/chaincode
 3. minifab install -v 1.01 -n strings - install chaincode named stings, specify higher version each time you want to update the chaincode
 4. minifab approve
