@@ -1,0 +1,26 @@
+{
+  "org0-example-com": {
+    "AnchorPeers": {
+      "mod_policy": "Admins",
+      "value": {
+        "anchor_peers": [
+           { "host": "peer1.org0.example.com", "port": "7051" },
+           { "host": "peer2.org0.example.com", "port": "7051" }
+        ]
+      },
+      "version": "0"
+    }
+  },
+  "org1-example-com": {
+    "AnchorPeers": {
+      "mod_policy": "Admins",
+      "value": {
+        "anchor_peers": [
+           { "host": "peer1.org1.example.com", "port": "7051" },
+           { "host": "peer2.org1.example.com", "port": "7051" }
+        ]
+      },
+      "version": "0"
+    }
+  }
+}

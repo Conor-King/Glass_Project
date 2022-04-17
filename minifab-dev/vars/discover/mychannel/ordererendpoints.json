@@ -1,0 +1,18 @@
+{
+  "example-com": {
+    "endpoint": [
+      {
+        "host": "orderer1.example.com",
+        "port": 7050
+      },
+      {
+        "host": "orderer2.example.com",
+        "port": 7050
+      },
+      {
+        "host": "orderer3.example.com",
+        "port": 7050
+      }
+    ]
+  }
+}

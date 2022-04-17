@@ -1,0 +1,33 @@
+{
+  "Chaincode": "simple",
+  "EndorsersByGroups": {
+    "G0": [
+      {
+        "MSPID": "org1-example-com",
+        "Endpoint": "peer1.org1.example.com:7051"
+      },
+      {
+        "MSPID": "org1-example-com",
+        "Endpoint": "peer2.org1.example.com:7051"
+      }
+    ],
+    "G1": [
+      {
+        "MSPID": "org0-example-com",
+        "Endpoint": "peer1.org0.example.com:7051"
+      },
+      {
+        "MSPID": "org0-example-com",
+        "Endpoint": "peer2.org0.example.com:7051"
+      }
+    ]
+  },
+  "Layouts": [
+    {
+      "quantities_by_group": {
+        "G0": 1,
+        "G1": 1
+      }
+    }
+  ]
+}

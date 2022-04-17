@@ -1,0 +1,114 @@
+{
+  "Admin@example.com": {
+    "key": "Admin@example.com",
+    "org": "example.com",
+    "path": "/home/vars/keyfiles/ordererOrganizations/example.com/users/Admin@example.com/msp/keystore/priv_sk",
+    "pkey": "keyfiles/ordererOrganizations/example.com/users/Admin@example.com/msp/keystore/priv_sk",
+    "type": "users"
+  },
+  "Admin@org0.example.com": {
+    "key": "Admin@org0.example.com",
+    "org": "org0.example.com",
+    "path": "/home/vars/keyfiles/peerOrganizations/org0.example.com/users/Admin@org0.example.com/msp/keystore/priv_sk",
+    "pkey": "keyfiles/peerOrganizations/org0.example.com/users/Admin@org0.example.com/msp/keystore/priv_sk",
+    "type": "users"
+  },
+  "Admin@org1.example.com": {
+    "key": "Admin@org1.example.com",
+    "org": "org1.example.com",
+    "path": "/home/vars/keyfiles/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/priv_sk",
+    "pkey": "keyfiles/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/priv_sk",
+    "type": "users"
+  },
+  "example.com": {
+    "key": "example.com",
+    "org": "example.com",
+    "path": "/home/vars/keyfiles/ordererOrganizations/example.com/ca/priv_sk",
+    "pkey": "keyfiles/ordererOrganizations/example.com/ca/priv_sk",
+    "type": "ca"
+  },
+  "example.com.tlsca": {
+    "key": "example.com",
+    "org": "example.com",
+    "path": "/home/vars/keyfiles/ordererOrganizations/example.com/tlsca/priv_sk",
+    "pkey": "keyfiles/ordererOrganizations/example.com/tlsca/priv_sk",
+    "type": "tlsca"
+  },
+  "orderer1.example.com": {
+    "key": "orderer1.example.com",
+    "org": "example.com",
+    "path": "/home/vars/keyfiles/ordererOrganizations/example.com/orderers/orderer1.example.com/msp/keystore/priv_sk",
+    "pkey": "keyfiles/ordererOrganizations/example.com/orderers/orderer1.example.com/msp/keystore/priv_sk",
+    "type": "orderers"
+  },
+  "orderer2.example.com": {
+    "key": "orderer2.example.com",
+    "org": "example.com",
+    "path": "/home/vars/keyfiles/ordererOrganizations/example.com/orderers/orderer2.example.com/msp/keystore/priv_sk",
+    "pkey": "keyfiles/ordererOrganizations/example.com/orderers/orderer2.example.com/msp/keystore/priv_sk",
+    "type": "orderers"
+  },
+  "orderer3.example.com": {
+    "key": "orderer3.example.com",
+    "org": "example.com",
+    "path": "/home/vars/keyfiles/ordererOrganizations/example.com/orderers/orderer3.example.com/msp/keystore/priv_sk",
+    "pkey": "keyfiles/ordererOrganizations/example.com/orderers/orderer3.example.com/msp/keystore/priv_sk",
+    "type": "orderers"
+  },
+  "org0.example.com": {
+    "key": "org0.example.com",
+    "org": "org0.example.com",
+    "path": "/home/vars/keyfiles/peerOrganizations/org0.example.com/ca/priv_sk",
+    "pkey": "keyfiles/peerOrganizations/org0.example.com/ca/priv_sk",
+    "type": "ca"
+  },
+  "org0.example.com.tlsca": {
+    "key": "org0.example.com",
+    "org": "org0.example.com",
+    "path": "/home/vars/keyfiles/peerOrganizations/org0.example.com/tlsca/priv_sk",
+    "pkey": "keyfiles/peerOrganizations/org0.example.com/tlsca/priv_sk",
+    "type": "tlsca"
+  },
+  "org1.example.com": {
+    "key": "org1.example.com",
+    "org": "org1.example.com",
+    "path": "/home/vars/keyfiles/peerOrganizations/org1.example.com/ca/priv_sk",
+    "pkey": "keyfiles/peerOrganizations/org1.example.com/ca/priv_sk",
+    "type": "ca"
+  },
+  "org1.example.com.tlsca": {
+    "key": "org1.example.com",
+    "org": "org1.example.com",
+    "path": "/home/vars/keyfiles/peerOrganizations/org1.example.com/tlsca/priv_sk",
+    "pkey": "keyfiles/peerOrganizations/org1.example.com/tlsca/priv_sk",
+    "type": "tlsca"
+  },
+  "peer1.org0.example.com": {
+    "key": "peer1.org0.example.com",
+    "org": "org0.example.com",
+    "path": "/home/vars/keyfiles/peerOrganizations/org0.example.com/peers/peer1.org0.example.com/msp/keystore/priv_sk",
+    "pkey": "keyfiles/peerOrganizations/org0.example.com/peers/peer1.org0.example.com/msp/keystore/priv_sk",
+    "type": "peers"
+  },
+  "peer1.org1.example.com": {
+    "key": "peer1.org1.example.com",
+    "org": "org1.example.com",
+    "path": "/home/vars/keyfiles/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/msp/keystore/priv_sk",
+    "pkey": "keyfiles/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/msp/keystore/priv_sk",
+    "type": "peers"
+  },
+  "peer2.org0.example.com": {
+    "key": "peer2.org0.example.com",
+    "org": "org0.example.com",
+    "path": "/home/vars/keyfiles/peerOrganizations/org0.example.com/peers/peer2.org0.example.com/msp/keystore/priv_sk",
+    "pkey": "keyfiles/peerOrganizations/org0.example.com/peers/peer2.org0.example.com/msp/keystore/priv_sk",
+    "type": "peers"
+  },
+  "peer2.org1.example.com": {
+    "key": "peer2.org1.example.com",
+    "org": "org1.example.com",
+    "path": "/home/vars/keyfiles/peerOrganizations/org1.example.com/peers/peer2.org1.example.com/msp/keystore/priv_sk",
+    "pkey": "keyfiles/peerOrganizations/org1.example.com/peers/peer2.org1.example.com/msp/keystore/priv_sk",
+    "type": "peers"
+  }
+}
