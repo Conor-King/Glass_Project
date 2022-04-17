@@ -17,7 +17,10 @@
 9. ```minifab invoke -p '"invoke","a","b","uniqueid2"'``` - transfer asset with uniqueid2 from a to b
 
 ### Exlanation
-The Steps above are to get familiar with the workflow with minifab and the chaincode. The values are for example puprose, as the conncetion between HLF and IPFS is still in development.  
+The Steps above are to get familiar with the workflow with minifab and the chaincode. The values are for example puprose, as the conncetion between HLF and IPFS is still in development.
+
+To develop simply edit the main.go file in chaicodes/sample/go/main.go and copy it to /vars/chaincode/sample. You can edit directly in vars/chaincode but there is a chance to lose your code, for ex - if u execute ```minifab cleanup```. 
+```cp chaincodes/strings/go/main.go vars/chaincode/strings/go/``` - copy and replace the main.go file 
 
 
 ### Relevant Links
