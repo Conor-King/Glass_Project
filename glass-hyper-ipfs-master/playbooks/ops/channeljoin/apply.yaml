@@ -1,0 +1,11 @@
+---
+- name: Initialize the success flag
+  set_fact:
+    status_flag: "Success"
+
+- name: "Join all peers to channel {{ CHANNEL_NAME}}"
+  include_tasks: "channeljoin.yaml"
+  loop: "{{ allpeers }}"
+  loop_control:
+    loop_var: joinpeer
+  when: status_flag == "Success"

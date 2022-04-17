@@ -1,0 +1,133 @@
+[33mcommit fd2d31e5ad741630002993876835900a505331a1[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: vtwenty3 <kisimovvalentin@gmaile.com>
+Date:   Sun Apr 17 23:18:47 2022 +0100
+
+    .gitgnore experiments
+
+[33mcommit 75fb2eebf1dedb3473b0d1e63a5594e4b7f211fa[m
+Merge: e70f574 4cb4591
+Author: vtwenty3 <kisimovvalentin@gmaile.com>
+Date:   Sun Apr 17 23:03:02 2022 +0100
+
+    Merge branch 'main' of https://github.com/Conor-King/Glass_Project into main
+
+[33mcommit e70f5742a83a3563bbc3c4e12d990044aaaf564b[m
+Author: vtwenty3 <kisimovvalentin@gmaile.com>
+Date:   Sun Apr 17 22:59:57 2022 +0100
+
+    chaincode update v1.2
+
+[33mcommit 4cb45915ee0d9325490aa6a8a3125666af73798e[m
+Author: Valentin Kisimov <61486268+vtwenty3@users.noreply.github.com>
+Date:   Sun Apr 17 19:32:03 2022 +0100
+
+    Update readme.md
+
+[33mcommit 0258b8b2f706ff48ac0e718d6a35aa274a113a0d[m
+Author: Valentin Kisimov <61486268+vtwenty3@users.noreply.github.com>
+Date:   Sun Apr 17 19:00:33 2022 +0100
+
+    Update readme.md
+
+[33mcommit 163315a7f0a54dba7c0cf00ce8a3502dda8a33fa[m
+Merge: 535c5f7 5249c7f
+Author: vtwenty3 <kisimovvalentin@gmaile.com>
+Date:   Sun Apr 17 17:47:33 2022 +0100
+
+    Merge branch 'main' of https://github.com/Conor-King/Glass_Project into main
+
+[33mcommit 535c5f7b25af62692c24270734082f8e97519b3a[m
+Author: vtwenty3 <kisimovvalentin@gmaile.com>
+Date:   Sun Apr 17 17:46:51 2022 +0100
+
+    minifab chaincode development v1.1
+
+[33mcommit 5249c7f2a9e2977c60dc4fa053597eaf2b2a1977[m
+Author: Valentin Kisimov <61486268+vtwenty3@users.noreply.github.com>
+Date:   Sun Apr 17 17:43:50 2022 +0100
+
+    Update readme.md
+
+[33mcommit dddab8c3db98244862bc6ead6395ba992d1784f1[m
+Author: Valentin Kisimov <61486268+vtwenty3@users.noreply.github.com>
+Date:   Sun Apr 17 17:35:53 2022 +0100
+
+    Update readme.md
+
+[33mcommit 7228f9a925c0d8d88acbf8582f0316c2f3241618[m
+Author: Valentin Kisimov <61486268+vtwenty3@users.noreply.github.com>
+Date:   Sun Apr 17 17:34:42 2022 +0100
+
+    create readme
+    
+    explanation
+
+[33mcommit 2c78596a328a7ebeed14b2ec1c685ddf91c79f3c[m
+Author: vtwenty3 <kisimovvalentin@gmaile.com>
+Date:   Sun Apr 17 17:28:50 2022 +0100
+
+    minifab chaincode development v1
+
+[33mcommit acce8f2e27c37e940c0687aa494629d096d50b45[m
+Author: Ga30r <54589984+Ga30r@users.noreply.github.com>
+Date:   Tue Apr 12 16:25:07 2022 +0100
+
+    IPFS data update
+
+[33mcommit 53cfff1ec620840e0c7d3bfc2a7a1edd85de8d83[m
+Author: Conor King <47451932+Conor-King@users.noreply.github.com>
+Date:   Wed Mar 30 15:17:30 2022 +0100
+
+    Rename demo folder
+
+[33mcommit 3957743635cf2de6a8d23af6b90f7f3f93a96ce8[m
+Author: Conor King <47451932+Conor-King@users.noreply.github.com>
+Date:   Thu Mar 24 08:40:28 2022 -0700
+
+    Teams files
+    
+    Adding the files from teams to the github.
+
+[33mcommit ca4960fd74d0f24838038cd011b918e2a11b6673[m
+Author: Valentin Kisimov <61486268+vtwenty3@users.noreply.github.com>
+Date:   Wed Mar 23 12:33:47 2022 +0000
+
+    Update README.md
+
+[33mcommit d9c2bfe7067339c026a57452bd990bed10e2bb86[m
+Author: Valentin Kisimov <61486268+vtwenty3@users.noreply.github.com>
+Date:   Wed Mar 23 12:30:11 2022 +0000
+
+    Update README.md
+
+[33mcommit 5d9b17ad3e8ecffea90894cc729372c0a88272fa[m
+Author: Conor King <47451932+Conor-King@users.noreply.github.com>
+Date:   Thu Mar 17 09:00:28 2022 -0700
+
+    Team files folder
+    
+    Storage for all our files on teams for peer review.
+
+[33mcommit 24acbe86c2e9b430b14d2033ff69078258ab13a2[m
+Author: Ga30r <54589984+Ga30r@users.noreply.github.com>
+Date:   Thu Mar 17 14:17:35 2022 +0000
+
+    json
+
+[33mcommit cf6a665ea0e5b7a29247365ae3773a89f36440b7[m
+Author: Ga30r <54589984+Ga30r@users.noreply.github.com>
+Date:   Tue Mar 15 08:26:33 2022 +0000
+
+    Glass full
+
+[33mcommit 9ac3550ddadff7d9453fda6fd2924883da21ee44[m
+Author: Ga30r <54589984+Ga30r@users.noreply.github.com>
+Date:   Tue Mar 8 18:07:41 2022 +0000
+
+    Demo code
+
+[33mcommit 9f634db941c5583bc12a9be49a387d5068ef0535[m
+Author: Conor King <47451932+Conor-King@users.noreply.github.com>
+Date:   Thu Feb 10 15:34:39 2022 +0000
+
+    Initial commit

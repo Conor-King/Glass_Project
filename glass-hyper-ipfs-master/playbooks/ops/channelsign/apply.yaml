@@ -1,0 +1,18 @@
+---
+- name: "Select an orderer node"
+  include_tasks: "{{ pjroot }}/playbooks/common/ordererselection.yaml"
+
+- name: Select a peer for signing off configuration changes.
+  set_fact:
+    actingpeer: "{{ allpeers|selectattr('org','equalto',CURRENT_ORG)|list|random }}"
+    isuffix: "{{ (fabric.release is version('2.0', '>='))|ternary('2', '')}}"
+
+- name: Create channel sign off script
+  template:
+    src: "{{ pjroot }}/playbooks/ops/templates/channelsignoff.j2"
+    dest: "{{ pjroot }}/vars/run/channelsignoff.sh"
+    mode: +x
+
+- name: Run the channel signing off script on cli container
+  command: >-
+    docker exec {{ CLINAME }} /vars/run/channelsignoff.sh

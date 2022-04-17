@@ -1,0 +1,17 @@
+---
+- name: "Select an orderer node"
+  include_tasks: "{{ pjroot }}/playbooks/common/ordererselection.yaml"
+
+- name: Select a peer for channel creation.
+  set_fact:
+    actingpeer: "{{ allpeers|selectattr('org','equalto',CURRENT_ORG)|list|random }}"
+
+- name: Create channel creation script
+  template:
+    src: "{{ pjroot }}/playbooks/ops/templates/channelcreate.j2"
+    dest: "{{ pjroot }}/vars/run/channelcreate.sh"
+    mode: +x
+
+- name: Run the channel creation script on cli container
+  command: >-
+    docker exec {{ CLINAME }} /vars/run/channelcreate.sh

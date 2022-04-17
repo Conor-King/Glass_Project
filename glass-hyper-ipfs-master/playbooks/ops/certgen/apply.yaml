@@ -1,0 +1,9 @@
+---
+- name: "Check keyfiles directory"
+  stat:
+    path: "{{ pjroot }}/vars/keyfiles"
+  register: certsexists
+
+- name: "Create certs and block artifacts"
+  include_tasks: "createcerts.yaml"
+  when: certsexists.stat.exists == false

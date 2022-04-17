@@ -1,0 +1,182 @@
+---
+- name: Set fabric.release based on the passed in parameter
+  set_fact:
+    fabric: "{{ fabric | combine({'release': (IMAGETAG|default('2.0')) + ''}) }}"
+
+- name: Make sure that working directory exists
+  file:
+    path: "{{ pjroot }}/vars/run"
+    state: "directory"
+    mode: 0775
+
+- name: Check if node vars available
+  stat:
+    path: "{{ pjroot }}/vars/node_vars.json"
+  register: envflag
+
+- name: "Load node vars"
+  when: envflag.stat.exists == true
+  include_vars: "{{ pjroot }}/vars/node_vars.json"
+
+- name: Process spec file to generate various variables
+  when: envflag.stat.exists == false
+  block:
+  - name: Set fabric.release based on the passed in parameter
+    set_fact:
+      allcas: "{{ [] }}"
+      allpeers: "{{ [] }}"
+      allorderers: "{{ [] }}"
+      allcouchdbs: "{{ [] }}"
+      alldash: "{{ [] }}"
+      nodeport: '0'
+
+  - name: Set up starting node port
+    set_fact:
+      nodeport: "{{ ((EXPOSE_ENDPOINTS|lower) == 'true') | ternary(7000, EXPOSE_ENDPOINTS|int) }}"
+      ipaddr: "{{ endpoint_address }}"
+    when: (EXPOSE_ENDPOINTS|lower) != 'false'
+
+  - name: Set up default adminPassword if not define in spec.yaml
+    set_fact:
+      adminPassword: "{{ fabric.settings.ca.adminPassword | default('adminpw') }}"
+
+  - name: When not expose endpoints
+    when: nodeport == '0'
+    block:
+    - name: Get all ca object list
+      set_fact:
+        allcas: |
+          {{ allcas + [{ 'org':item.split('.')[1:] | join("."), 'portmap':'',
+            'url': item, 'port': '7054', 'mspid': item.split('.')[1:] | join('-'),
+            'name':item.split('.')[0], 'fullname': item, 'type': 'ca',
+            'adminPassword': adminPassword,
+            'command': 'fabric-ca-server start -b admin:' + adminPassword + ' --cfg.affiliations.allowremove --cfg.identities.allowremove'  }] }}
+      with_items: "{{ fabric.cas }}"
+      when: fabric.cas is defined
+
+    - name: Get all peer object list
+      set_fact:
+        allpeers: |
+          {{ allpeers + [{'org':item.split('.')[1:] | join("."), 'portmap':'',
+            'url': item, 'port': '7051', 'mspid': item.split('.')[1:] | join('-'),
+            'name':item.split('.')[0], 'fullname': item, 'type': 'peer',
+            'adminPassword': 'adminpw' }] }}
+      with_items: "{{ fabric.peers }}"
+      when: fabric.peers is defined
+
+    - name: Get all couchdb object list
+      set_fact:
+        allcouchdbs: |
+          {{ allcouchdbs + [{'org':item.split('.')[1:] | join("."), 'portmap':'',
+            'url': item+'.couchdb', 'port': '5984', 'mspid': item.split('.')[1:] | join('-'),
+            'name':item.split('.')[0]+'.couchdb', 'fullname': item+'.couchdb', 'type': 'couchdb',
+            'adminPassword': 'adminpw' }] }}
+      with_items: "{{ fabric.peers }}"
+      when: fabric.peers is defined and (DB_TYPE|lower) == "couchdb"
+
+    - name: Get all orderer object list
+      set_fact:
+        allorderers: |
+          {{ allorderers + [{ 'org':item.split('.')[1:] | join("."), 'portmap':'',
+            'url': item, 'port': '7050', 'mspid': item.split('.')[1:] | join('-'),
+            'name':item.split('.')[0], 'fullname': item, 'type': 'orderer' }] }}
+      with_items: "{{ fabric.orderers }}"
+      when: fabric.orderers is defined
+
+  - name: When expose endpoints
+    when: nodeport != '0'
+    block:
+    - name: Get all ca object list
+      set_fact:
+        allcas: |
+          {{ allcas + [{ 'org':item.split('.')[1:] | join("."),
+            'url': ipaddr, 'port': nodeport, 'oport': (nodeport|int+1000)|string,
+            'portmap':'-p '+nodeport+':7054'+' -p '+((nodeport|int+1000)|string)+':9443',
+            'mspid': item.split('.')[1:] | join('-'),
+            'name':item.split('.')[0], 'fullname': item, 'type': 'ca',
+            'adminPassword': adminPassword ,
+            'command': 'fabric-ca-server start -b admin:' + adminPassword + ' --cfg.affiliations.allowremove --cfg.identities.allowremove'  }] }}
+        nodeport: "{{ nodeport|int + 1 }}"
+      with_items: "{{ fabric.cas }}"
+      when: fabric.cas is defined
+
+    - name: Get all peer object list
+      set_fact:
+        allpeers: |
+          {{ allpeers + [{'org':item.split('.')[1:] | join("."),
+            'url': ipaddr, 'port': nodeport, 'oport': (nodeport|int+1000)|string,
+            'portmap':'-p '+nodeport+':7051 -p '+((nodeport|int+1000)|string)+':7061',
+            'mspid': item.split('.')[1:] | join('-'),
+            'name':item.split('.')[0], 'fullname': item, 'type': 'peer',
+            'adminPassword': 'adminpw' }] }}
+        nodeport: "{{ nodeport|int + 1 }}"
+      with_items: "{{ fabric.peers }}"
+      when: fabric.peers is defined
+
+    - name: Get all couchdb object list
+      set_fact:
+        allcouchdbs: |
+          {{ allcouchdbs + [{'org':item.split('.')[1:] | join("."),
+            'url': ipaddr, 'port': nodeport, 'portmap':'-p '+nodeport+':5984',
+            'mspid': item.split('.')[1:] | join('-'),
+            'name':item.split('.')[0]+'.couchdb', 'fullname': item+'.couchdb', 'type': 'couchdb',
+            'adminPassword': 'adminpw' }] }}
+        nodeport: "{{ nodeport|int + 1 }}"
+      with_items: "{{ fabric.peers }}"
+      when: fabric.peers is defined and (DB_TYPE|lower) == "couchdb"
+
+    - name: Get all orderer object list
+      set_fact:
+        allorderers: |
+          {{ allorderers + [{ 'org':item.split('.')[1:] | join("."),
+            'url': ipaddr, 'port': nodeport, 'oport': (nodeport|int+1000)|string,
+            'portmap':'-p '+nodeport+':7050 -p '+((nodeport|int+1000)|string)+':7060',
+            'mspid': item.split('.')[1:] | join('-'),
+            'name':item.split('.')[0], 'fullname': item, 'type': 'orderer' }] }}
+        nodeport: "{{ nodeport|int + 1 }}"
+      with_items: "{{ fabric.orderers }}"
+      when: fabric.orderers is defined
+
+  - name: Fix possible misconfiguration issues
+    set_fact:
+      allcas: "{{ allcas | rejectattr('fullname', 'equalto', '') | list }}"
+      allpeers: "{{ allpeers | rejectattr('fullname', 'equalto', '') | list }}"
+      allorderers: "{{ allorderers | rejectattr('fullname', 'equalto', '') | list }}"
+
+  - name: Get ca, peer and orderer orgs
+    set_fact:
+      caorgs: "{{ allcas | default([]) | map(attribute='org') | list  | unique | sort }}"
+      peerorgs: "{{ allpeers | default([]) | map(attribute='org') | list  | unique | sort }}"
+      ordererorgs: "{{ allorderers | default([]) | map(attribute='org') | list  | unique | sort }}"
+
+  - name: Create all orgs list
+    set_fact:
+      allorgs: "{{ (caorgs + peerorgs + ordererorgs) | sort | unique }}"
+
+  - name: Set all org cert path
+    set_fact:
+      orgattrs: >-
+        {{ orgattrs | default({}) | combine({item: {'mspid': item.split('.')|join('-'),
+          'certpath': (item in peerorgs)|ternary('peerOrganizations', 'ordererOrganizations')}} ) }}
+    with_items: "{{ allorgs }}"
+
+  - name: Set up starting node port when all nodes private
+    set_fact:
+      nodeport: "7200"
+    when: (EXPOSE_ENDPOINTS|lower) == 'false'
+
+  - name: Set special ports
+    set_fact:
+      explorer_port: "{{ nodeport|int + 1 }}"
+      portainer_port: "{{ nodeport|int + 2 }}"
+      console_port: "{{ nodeport|int + 3 }}"
+
+  - name: Produce the node env file
+    copy:
+      dest: "{{ pjroot }}/vars/node_vars.json"
+      content: >-
+        {{ {'allcas': allcas, 'allpeers': allpeers, 'allorderers': allorderers, 'explorer_port': explorer_port,
+            'portainer_port': portainer_port, 'allcouchdbs': allcouchdbs|default([]),
+            'console_port': console_port,
+            'caorgs': caorgs, 'peerorgs': peerorgs, 'ordererorgs': ordererorgs, 'allorgs': allorgs,
+            'orgattrs': orgattrs } | to_nice_json(indent=2) }}

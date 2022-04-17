@@ -1,0 +1,32 @@
+---
+- name: Initialize the success flag
+  set_fact:
+    status_flag: "Success"
+
+- name: "Select an orderer node"
+  include_tasks: "{{ pjroot }}/playbooks/common/ordererselection.yaml"
+
+- name: Select a peer for chaincode invoke preparation
+  set_fact:
+    actingpeer: "{{ allpeers|selectattr('org','equalto',CURRENT_ORG)|list|random }}"
+    isuffix: "{{ (fabric.release is version('2.0', '>='))|ternary('2', '')}}"
+
+- name: "Select peer nodes for sending transactions to"
+  include_tasks: "{{ pjroot }}/playbooks/common/peerselection.yaml"
+
+- name: Create chaincode invocation script
+  template:
+    src: "{{ pjroot }}/playbooks/ops/templates/ccinvoke.j2"
+    dest: "{{ pjroot }}/vars/run/ccinvoke.sh"
+    mode: +x
+
+- name: Run the chaincode invoke script on cli container
+  command: >-
+    docker exec {{ CLINAME }} /vars/run/ccinvoke.sh
+  register: theresult
+
+- name: "Chaincode invocation results"
+  debug:
+    msg: "{{ theresult.stderr_lines }}"
+  tags: [print_action]
+

@@ -1,0 +1,16 @@
+#!/bin/bash
+declare XX_CHANNEL_NAME='mychannel'
+declare XX_CC_LANGUAGE='go'
+declare XX_IMAGETAG='2.3.0'
+declare XX_CC_VERSION='1.0'
+declare XX_CC_NAME='simple'
+declare XX_DB_TYPE='couchdb'
+declare XX_CC_PARAMETERS='ImluaXQiLCJhIiwiMjAwIiwiYiIsIjMwMCIK'
+declare XX_CC_INIT_REQUIRED='true'
+declare XX_TRANSIENT_DATA='Cg=='
+declare XX_EXPOSE_ENDPOINTS='false'
+declare XX_BLOCK_NUMBER='newest'
+declare XX_CC_PRIVATE='false'
+declare XX_CC_POLICY='Cg=='
+declare XX_CURRENT_ORG=enu.org
+declare XX_RUN_OUTPUT=minifab

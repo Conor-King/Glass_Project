@@ -1,0 +1,80 @@
+---
+- name: Start fabric operations
+  hosts: minifab
+  gather_facts: no
+  connection: local
+  vars:
+    pjroot: "{{ playbook_dir }}"
+  vars_files:
+    - "./spec.yaml"
+    - "./playbooks/ops/opnames.yaml"
+  tasks:
+    - name: Check if this is k8s
+      stat: 
+        path: "{{ pjroot }}/vars/kubeconfig/config"
+      register: k8sflag
+
+    - name: "Set k8s env flag"
+      set_fact:
+        ISK8S: "{{ k8sflag.stat.exists }}"
+
+    - set_fact:
+        allops: "{{ mode.split(',')|list }}"
+        status_flag: "Success"
+        current_location_hash: "{{ hostroot | hash('sha256') }}"
+
+    - set_fact:
+        CLINAME: "{{ (fabric.netname is defined) | ternary(fabric.netname, current_location_hash[:10]+'_cli') }}"
+        NETNAME: "{{ (fabric.netname is defined) | ternary(fabric.netname, current_location_hash[:10]+'_net') }}"
+
+    - name: Set endpoint address to first auto detected IP address 
+      set_fact:
+        endpoint_address: "{{ ADDRS.split(',')[0] }}"
+      when: fabric.endpoint_address is undefined
+
+    - name: Set up the endpoint address when configured in spec.yaml
+      set_fact:
+        endpoint_address: "{{ fabric.endpoint_address }}"
+      when: fabric.endpoint_address is defined
+
+    - name: Remove approve and commit from the operation list if release is less than 2.0
+      set_fact:
+        allops: "{{ allops | difference(['ccapprove', 'cccommit']) }}"
+        OPNAMES: "{{ OPNAMES | combine({'ccinstantiate': 'cc instantiate'}) }}"
+      when: IMAGETAG is version('2.0', '<')
+
+    - name: Setup container_options for appending docker run command
+      set_fact:
+        container_options: "{{ ( fabric.container_options is defined ) | ternary(fabric.container_options, '') }}"
+
+    - meta: end_play
+      when: allops|length == 0
+
+    - set_fact:
+        msgops: "{{ (msgops|default([])) + [OPNAMES[item]] }}"
+      with_items: "{{ allops }}"
+
+    - name: "Preparing for the following operations:"
+      debug:
+        msg: "{{ msgops|join(', ') }}"
+      when: msgops|length > 1
+      tags: [print_action]
+
+    - name: "Process configuration"
+      include_tasks: "playbooks/common/config_apply.yaml"
+
+    - name: Check if external node endpoint exists
+      stat: 
+        path: "{{ pjroot }}/vars/ext_node_vars.json"
+      register: exflag
+
+    - name: "Load external node vars"
+      include_vars: "{{ pjroot }}/vars/ext_node_vars.json"
+      when: exflag.stat.exists == true
+
+    - name: Do all the requested fabric operations
+      include_tasks: "playbooks/ops/opwrapper.yaml"
+      loop: "{{ allops }}"
+      loop_control:
+        loop_var: op
+      when: status_flag == "Success"

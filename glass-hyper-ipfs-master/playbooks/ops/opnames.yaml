@@ -1,0 +1,78 @@
+OPNAMES:
+  ccinstall: "cc install"
+  ccapprove: "cc approve"
+  cccommit: "cc commit"
+  ccinstantiate: "cc initialize"
+  ccinvoke: "cc invoke"
+  ccquery: "cc query"
+  channelcreate: "channel create"
+  channeljoin: "channel join"
+  blockquery: "block query"
+  channelquery: "channel query"
+  profilegen: "profile generation"
+  channelsign: "channel signoff"
+  channelupdate: "channel update"
+  anchorupdate: "anchor update"
+  dashup: "dashboard up"
+  dashdown: "dashboard down"
+  nodeimport: "node import"
+  discover: "discover"
+  imageget: "download images"
+  certgen: "generate certificates"
+  certrem: "remove certificates"
+  netup: "start network"
+  netdown: "shutdown network"
+  filerem: "cleanup working directory"
+  netstats: "network status"
+  optionverify: "verify options"
+  explorerup: "start explorer"
+  explorerdown: "shutdown explorer"
+  consoleup: "start console"
+  consoledown: "shutdown console"
+  portainerup: "start portainer"
+  portainerdown: "stop portainer"
+  apprun: "run chaincode application"
+  caliperrun: "run caliper test"
+  update: "update Minifabric"
+  configmerge: "merge configuration"
+PRECONDITIONS:
+  ccinstall: ['PEER']
+  ccapprove: ['PEER', 'ORDERER']
+  cccommit: ['PEER', 'ORDERER']
+  ccinstantiate: ['PEER', 'ORDERER']
+  ccinvoke: ['PEER', 'ORDERER']
+  ccquery: ['PEER']
+  channelcreate: ['PEER', 'ORDERER']
+  channeljoin: ['PEER', 'ORDERER']
+  blockquery: ['PEER']
+  channelquery: ['PEER', 'ORDERER']
+  profilegen: []
+  channelsign: ['PEER', 'ORDERER']
+  channelupdate: ['PEER', 'ORDERER']
+  anchorupdate: ['PEER', 'ORDERER']
+  dashup: []
+  dashdown: []
+  nodeimport: ['PEER', 'ORDERER']
+  discover: ['PEER', 'ORDERER']
+  imageget: []
+  certgen: []
+  certrem: []
+  netup: []
+  netdown: []
+  filerem: []
+  netstats: []
+  optionverify: []
+  explorerup: []
+  explorerdown: []
+  consoleup: []
+  consoledown: []
+  portainerup: []
+  portainerdown: []
+  apprun: ['PEER', 'ORDERER']
+  caliperrun: ['PEER', 'ORDERER']
+  update: []
+  configmerge: []
+LANGUAGEENVS:
+  java: 'java:latest'
+  go: 'golang:latest'
+  node: 'node:12.13.1-alpine3.10'

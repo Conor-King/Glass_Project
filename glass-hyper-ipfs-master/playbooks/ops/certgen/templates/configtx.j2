@@ -1,0 +1,209 @@
+---
+{% if allorgs | length > 0 %}
+Organizations:
+{%   for org in allorgs %}
+{%     set orgid = orgattrs[org]['mspid'] %}
+  - &{{ orgid }}
+      Name: {{ orgid }}
+      ID: {{ orgid }}
+{%     if org in peerorgs %}
+      MSPDir: keyfiles/peerOrganizations/{{ org }}/msp
+      Policies:
+        Readers:
+          Type: Signature
+          Rule: "OR('{{ orgid }}.admin', '{{ orgid }}.peer', '{{ orgid }}.client')"
+        Writers:
+          Type: Signature
+          Rule: "OR('{{ orgid }}.admin', '{{ orgid }}.client')"
+        Admins:
+          Type: Signature
+          Rule: "OR('{{ orgid }}.admin')"
+        Endorsement:
+          Type: Signature
+          Rule: "OR('{{ orgid }}.peer')"
+
+      AnchorPeers:
+{%       for peer in allpeers %}
+{%         if peer.org == org %}
+      - Host: {{ peer.url }}
+        Port: {{ peer.port }}
+{%         endif %}
+{%       endfor %}
+{%     elif org in ordererorgs %}
+      MSPDir: keyfiles/ordererOrganizations/{{ org }}/msp
+      Policies:
+        Readers:
+          Type: Signature
+          Rule: "OR('{{ orgid }}.member')"
+        Writers:
+          Type: Signature
+          Rule: "OR('{{ orgid }}.member')"
+        Admins:
+          Type: Signature
+          Rule: "OR('{{ orgid }}.admin')"
+{%     endif %}
+{%   endfor %}
+{% endif %}
+
+Capabilities:
+  Channel: &ChannelCapabilities
+{% if truerelease is version('2.0','>=') %}
+    V2_0: true
+{% elif truerelease is version('1.4.3','>=') and truerelease is version('2.0','<') %}
+    V1_4_3: true
+    V1_3: false
+    V1_1: false
+{% elif truerelease is version('1.4.2','>=') and truerelease is version('1.4.3','<') %}
+    V1_4_2: true
+    V1_3: false
+    V1_1: false
+{% elif truerelease is version('1.3.0','>=') and truerelease is version('1.4.2','<') %}
+    V1_3: true
+{% elif truerelease is version('1.1.0','>=') and truerelease is version('1.3.0','<') %}
+    V1_1: true
+{% endif %}
+
+  Orderer: &OrdererCapabilities
+{% if truerelease is version('2.0','>=') %}
+    V2_0: true
+{% elif truerelease is version('1.4.2','>=') and  truerelease is version('2.0','<') %}
+    V1_4_2: true
+    V1_1: false
+{% else %}
+    V1_1: true
+{% endif %}
+
+  Application: &ApplicationCapabilities
+{% if truerelease is version('2.0','>=') %}
+    V2_0: true
+{% elif truerelease is version('1.4.2','>=') and truerelease is version('2.0','<') %}
+    V1_4_2: true
+    V1_3: false
+    V1_2: false
+    V1_1: false
+{% elif truerelease is version('1.3.0','>=') and truerelease is version('1.4.1','<=') %}
+    V1_3: true
+    V1_2: false
+    V1_1: false
+{% elif truerelease is version('1.2.0','>=') and truerelease is version('1.3.0','<') %}
+    V1_2: true
+    V1_1: false
+{% elif truerelease is version('1.1.0','>=') and truerelease is version('1.2.0','<') %}
+    V1_1: true
+{% endif %}
+
+Application: &ApplicationDefaults
+  Organizations:
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+{% if truerelease is version('2.0','>=') %}
+    LifecycleEndorsement:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Endorsement"
+    Endorsement:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Endorsement"
+{% endif %}
+
+  Capabilities:
+    <<: *ApplicationCapabilities
+
+Orderer: &OrdererDefaults
+  OrdererType: {{ (allorderers|length > 0)|ternary('etcdraft', 'solo') }}
+
+  BatchTimeout: 2s
+
+  BatchSize:
+    MaxMessageCount: 10
+    AbsoluteMaxBytes: 99 MB
+    PreferredMaxBytes: 512 KB
+
+{% if allorderers | length > 0 %}
+  Addresses:
+{%  for orderer in allorderers %}
+  - {{ orderer.url }}:{{ orderer.port }}
+{%  endfor %}
+  EtcdRaft:
+    Consenters:
+{%  for orderer in allorderers %}
+    - Host: {{ orderer.url }}
+      Port: {{ orderer.port }}
+      ClientTLSCert: keyfiles/ordererOrganizations/{{ orderer.org }}/orderers/{{ orderer.fullname }}/tls/server.crt
+      ServerTLSCert: keyfiles/ordererOrganizations/{{ orderer.org }}/orderers/{{ orderer.fullname }}/tls/server.crt
+{%  endfor %}
+{% endif %}
+  Organizations:
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+    BlockValidation:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+
+Channel: &ChannelDefaults
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+
+  Capabilities:
+    <<: *ChannelCapabilities
+
+Profiles:
+  OrgChannel:
+    Consortium: SampleConsortium
+    <<: *ChannelDefaults
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+{%    for org in peerorgs %}
+      - *{{ orgattrs[org].mspid }}
+{%    endfor %}
+      Capabilities:
+        <<: *ApplicationCapabilities
+
+  OrdererGenesis:
+    <<: *ChannelDefaults
+    Capabilities:
+      <<: *ChannelCapabilities
+    Orderer:
+      <<: *OrdererDefaults
+      Organizations:
+{%    for org in ordererorgs %}
+      - *{{ orgattrs[org].mspid }}
+{%    endfor %}
+      Capabilities:
+        <<: *OrdererCapabilities
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+{%   for org in ordererorgs %}
+      - <<: *{{ orgattrs[org].mspid }}
+{%   endfor %}
+    Consortiums:
+      SampleConsortium:
+        Organizations:
+{%   for org in peerorgs %}
+        - *{{ orgattrs[org].mspid }}
+{%   endfor %}

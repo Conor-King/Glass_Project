@@ -1,0 +1,46 @@
+#!/bin/bash
+# Script to approve chaincode
+{% include "envsetting.j2" %}
+
+peer lifecycle chaincode queryinstalled -O json | jq -r '.installed_chaincodes | .[] | select(.package_id|startswith("{{ CC_NAME}}_{{ CC_VERSION }}:"))' > ccstatus.json
+
+PKID=$(jq '.package_id' ccstatus.json | xargs)
+REF=$(jq '.references.{{ CHANNEL_NAME }}' ccstatus.json)
+
+SID=$(peer lifecycle chaincode querycommitted -C {{ CHANNEL_NAME }} -O json \
+  | jq -r '.chaincode_definitions|.[]|select(.name=="{{ CC_NAME }}")|.sequence' || true)
+if [[ -z $SID ]]; then
+  SEQUENCE=1
+elif [[ -z $REF ]]; then
+  SEQUENCE=$SID
+else
+  SEQUENCE=$((1+$SID))
+fi
+
+{% for org in peerorgs %}
+{% set approvepeer = allpeers|selectattr('org', 'equalto', org)|list|random %}
+
+export CORE_PEER_LOCALMSPID={{ approvepeer.mspid }}
+export CORE_PEER_TLS_ROOTCERT_FILE=/vars/keyfiles/peerOrganizations/{{ approvepeer.org }}/peers/{{ approvepeer.fullname }}/tls/ca.crt
+export CORE_PEER_MSPCONFIGPATH=/vars/keyfiles/peerOrganizations/{{ approvepeer.org }}/users/Admin@{{ approvepeer.org }}/msp
+export CORE_PEER_ADDRESS={{ approvepeer.url }}:{{ approvepeer.port }}
+
+# approved=$(peer lifecycle chaincode checkcommitreadiness --channelID {{ CHANNEL_NAME }} \
+#   --name {{ CC_NAME }} --version {{ CC_VERSION }} --init-required --sequence $SEQUENCE --tls \
+#   --cafile $ORDERER_TLS_CA --output json | jq -r '.approvals.{{ approvepeer.org.split('.')|join('-') }}')
+
+# if [[ "$approved" == "false" ]]; then
+  peer lifecycle chaincode approveformyorg --channelID {{ CHANNEL_NAME}} --name {{ CC_NAME }} \
+    --version {{ CC_VERSION }} --package-id $PKID \
+{% if (CC_INIT_REQUIRED|lower) == 'true' %}
+  --init-required \
+{% endif %}
+{% if CC_PRIVATE == 'true' %}
+    --collections-config /vars/{{CC_NAME}}_collection_config.json \
+{% endif %}
+{% if CC_POLICY != 'Cg==' %}
+    --signature-policy '{{ CC_POLICY|b64decode|trim }}' \
+{% endif %}
+    --sequence $SEQUENCE -o $ORDERER_ADDRESS --tls --cafile $ORDERER_TLS_CA
+# fi
+{% endfor %}

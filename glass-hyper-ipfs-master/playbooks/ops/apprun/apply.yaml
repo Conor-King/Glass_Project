@@ -1,0 +1,28 @@
+---
+- name: Create apprun script
+  template:
+    src: "{{ pjroot }}/playbooks/ops/apprun/templates/apprun_{{CC_LANGUAGE}}.j2"
+    dest: "{{ pjroot }}/vars/run/apprun.sh"
+    mode: +x
+
+- name: Run the chaincode application
+  command: >-
+    docker run --network {{ NETNAME }} --name apprun --hostname apprun --rm
+    -v /var/run/docker.sock:/var/run/docker.sock
+    -v {{ hostroot }}/vars:/vars
+    -v {{ hostroot }}/vars/app/{{CC_LANGUAGE}}:/go/src/github.com/app
+    --entrypoint /vars/run/apprun.sh
+    {{ LANGUAGEENVS[CC_LANGUAGE] }}
+  register: runstates
+
+- name: App run
+  when: runstates.rc != 0
+  debug:
+    msg: "{{ runstates.stderr_lines }}"
+  tags: [print_action]
+
+- name: App run
+  when: runstates.rc == 0
+  debug:
+    msg: "Application in {{ CC_LANGUAGE }} completed successfully"
+  tags: [print_action]

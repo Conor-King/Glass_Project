@@ -1,0 +1,25 @@
+---
+- name: Set ca and ccenv image release
+  set_fact:
+    desiredrelease: "{{ (image == 'ca' or (image == 'ccenv' and fabric.release is version('2.0', '<'))) | ternary('1.4', fabric.release) }}"
+
+- name: Check if the image already exist
+  command: >-
+    docker images -f reference='hyperledger/fabric-{{ image }}:{{ desiredrelease }}' -q
+  register: imagestate
+
+- name: Retrieve the image if it does not already exist
+  command: >-
+    docker pull hyperledger/fabric-{{ image }}:{{ desiredrelease }}
+  when: imagestate.stdout == ''
+  register: result
+
+- name: Tag ccenv image to be latest
+  command: >-
+    docker tag hyperledger/fabric-{{ image }}:{{ desiredrelease }} hyperledger/fabric-{{ image }}:latest
+  when: imagestate.stdout == '' and fabric.release is version('1.4.7', '<=') and image == 'ccenv'
+
+- name: Set the status flag based on the return value
+  set_fact:
+    status_flag: "{{ (result.rc == 0)|ternary('Success', 'Failure') }}"
+  when: imagestate.stdout == ''

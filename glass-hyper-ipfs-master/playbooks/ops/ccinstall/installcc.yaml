@@ -1,0 +1,23 @@
+---
+- name: Set the peer to have chaincode installed
+  set_fact:
+    actingpeer: "{{ installpeer }}"
+
+- name: Select right cc install script file
+  set_fact:
+    isuffix: "{{ (fabric.release is version('2.0', '>='))|ternary('2', '')}}"
+
+- name: Create chaincode install script
+  template:
+    src: "{{ pjroot }}/playbooks/ops/templates/ccinstall{{isuffix}}.j2"
+    dest: "{{ pjroot }}/vars/run/ccinstall.{{ actingpeer.fullname }}.sh"
+    mode: +x
+
+- name: Run the chaincode install script on cli container
+  command: >-
+    docker exec {{ CLINAME }} /vars/run/ccinstall.{{ actingpeer.fullname }}.sh
+  register: result
+
+- name: Set the status flag based on the return value
+  set_fact:
+    status_flag: "{{ (result.rc == 0)|ternary('Success', 'Failure') }}"

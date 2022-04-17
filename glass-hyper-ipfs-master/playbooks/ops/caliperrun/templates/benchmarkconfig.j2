@@ -1,0 +1,20 @@
+test:
+    name: {{ CC_NAME }}-benchmark
+    description: test benchmark
+    workers:
+      type: local
+      number: 2
+    rounds:
+      - label: {{ CC_NAME }} test
+        description: {{ CC_NAME }} benchmark
+        txDuration: 60
+        rateControl: 
+          type: fixed-load
+          opts:
+            transactionLoad: 300
+        workload:
+          module: /hyperledger/caliper/workspace/app/callback/app.js
+          arguments:
+            contractId: {{ CC_NAME }}
+            randomSeed: 5000000
+            userID: Admin@{{ CURRENT_ORG }}

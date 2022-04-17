@@ -1,0 +1,131 @@
+{
+  "name": "{{ NETNAME }}",
+  "x-comment-0": "ROOTPATH should be set to the absolute path of crypto material starting directory",
+  "x-comment-1": "for example: export ROOTPATH=/home/ubuntu/mywork/vars/keyfiles",
+  "x-type": "hlfv-{{ fabric.release }}",
+  "version": "1.0.0",
+  "client": {
+{% set pypeer=allpeers|random %}
+    "organization": "{{ pypeer.org }}",
+    "cryptoconfig": {
+      "path": "${ROOTPATH}"
+    },
+    "connection": {
+      "timeout": {
+        "peer": { "endorser": "300", "eventHub": "300", "eventReg": "300"},
+        "orderer": "300"
+      }
+    }
+  },
+  "channels": {
+    "{{ CHANNEL_NAME }}": {
+      "orderers": [
+{% for orderer in allorderers %}
+        "{{ orderer.fullname }}"{{ '' if loop.last else ',' }}
+{% endfor %}
+      ],
+      "peers": {
+{% for peer in allpeers %}
+        "{{ peer.fullname }}": {
+          "endorsingPeer": true, "chaincodeQuery": true, "eventSource": true
+        }{{ '' if loop.last else ',' }}
+{% endfor %}
+      }
+    }
+  },
+  "organizations": {
+{% for org in allorgs %}
+{%  set orgtype = (org in peerorgs)|ternary('peer', 'orderer') %}
+    "{{ org }}": {
+      "mspid": "{{ org.split('.')|join('-') }}",
+      "cryptoPath": "{{ orgtype }}Organizations/{{ org }}/users/{username}@{{ org }}/msp",
+{% if orgtype == 'peer' %}
+      "peers": [
+{%   for peer in allpeers|selectattr('org', 'equalto', org)|list %}
+        "{{ peer.fullname }}"{{ '' if loop.last else ',' }}
+{%   endfor %}
+      ],
+{% else %}
+      "orderers": [
+{%   for orderer in allorderers|selectattr('org', 'equalto', org)|list %}
+        "{{ orderer.fullname }}"{{ '' if loop.last else ',' }}
+{%   endfor %}
+      ],
+{% endif %}
+      "certificateAuthorities": [
+{%   for ca in allcas|selectattr('org', 'equalto', org)|list %}
+       "{{ ca.fullname }}"{{ '' if loop.last else ',' }}
+{%   endfor %}
+      ]
+    }{{ '' if loop.last else ',' }}
+{% endfor %}
+  },
+  "orderers": {
+{% for orderer in allorderers %}
+    "{{ orderer.fullname }}": {
+      "url": "grpcs://{{ orderer.url }}:{{ orderer.port }}",
+      "grpcOptions": {
+        "ssl-target-name-override": "{{ orderer.fullname }}"
+      },
+      "tlsCACerts": {
+        "pem": "{{ lookup('file', pjroot+'/vars/keyfiles/ordererOrganizations/'+orderer.org+'/orderers/'+orderer.fullname+'/tls/ca.crt')|regex_replace('(\n)', '\\\\n') }}"
+      }
+    }{{ '' if loop.last else ',' }}
+{% endfor %}
+  },
+  "peers": {
+{% for peer in allpeers %}
+    "{{ peer.fullname }}": {
+      "url": "grpcs://{{ peer.url }}:{{ peer.port }}",
+      "grpcOptions": {
+        "ssl-target-name-override": "{{ peer.fullname }}"
+      },
+      "tlsCACerts": {
+        "pem": "{{ lookup('file', pjroot+'/vars/keyfiles/peerOrganizations/'+peer.org+'/peers/'+peer.fullname+'/tls/ca.crt')|regex_replace('(\n)', '\\\\n') }}"
+      }
+    }{{ '' if loop.last else ',' }}
+{% endfor %}
+  },
+  "certificateAuthorities": {
+{% for ca in allcas %}
+    "{{ ca.fullname }}": {
+      "url": "https://{{ ca.url }}:{{ ca.port }}",
+      "tlsCACerts": {
+        "pem": ["{{ lookup('file', pjroot+'/vars/keyfiles/'+orgattrs[ca.org].certpath+'/'+ca.org+'/ca/'+ca.fullname+'-cert.pem')|regex_replace('(\n)', '\\\\n') }}"]
+      },
+      "httpOptions": { "verify": "false" },
+      "caName": "{{ ca.name }}",
+      "registrar": { "enrollId": "admin", "enrollSecret": "{{ ca.adminPassword }}" }
+    }{{ '' if loop.last else ',' }}
+{% endfor %}
+  },
+  "entityMatchers": {
+    "orderer": [
+{% for orderer in allorderers %}
+      { "mappedHost": "{{ orderer.fullname }}",
+        "pattern": "(\\w*){{ orderer.fullname }}(\\w*)",
+        "sslTargetOverrideUrlSubstitutionExp": "{{ orderer.fullname }}",
+        "urlSubstitutionExp": "{{ orderer.url }}:{{ orderer.port }}"
+      }{{ '' if loop.last else ',' }}
+{% endfor %}
+    ],
+    "peer": [
+{% for peer in allpeers %}
+      { "mappedHost": "{{ peer.fullname }}",
+        "pattern": "(\\w*){{ peer.fullname }}(\\w*)",
+        "sslTargetOverrideUrlSubstitutionExp": "{{ peer.fullname }}",
+        "urlSubstitutionExp": "{{ peer.url }}:{{ peer.port }}"
+      }{{ '' if loop.last else ',' }}
+{% endfor %}
+    ],
+  "certificateAuthorities": [
+{% for ca in allcas %}
+      { "mappedHost": "{{ ca.fullname }}",
+        "pattern": "(\\w*){{ ca.fullname }}(\\w*)",
+        "sslTargetOverrideUrlSubstitutionExp": "{{ ca.fullname }}",
+        "urlSubstitutionExp": "{{ ca.url }}:{{ ca.port }}"
+      }{{ '' if loop.last else ',' }}
+{% endfor %}
+    ]
+  }
+}

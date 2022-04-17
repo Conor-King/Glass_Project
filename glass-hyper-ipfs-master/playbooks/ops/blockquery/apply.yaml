@@ -1,0 +1,45 @@
+---
+- name: "Select an orderer node"
+  include_tasks: "{{ pjroot }}/playbooks/common/ordererselection.yaml"
+
+- name: Select a peer for channel block query.
+  set_fact:
+    actingpeer: "{{ allpeers|selectattr('org','equalto',CURRENT_ORG)|list|random }}"
+    isuffix: "{{ (fabric.release is version('2.0', '>='))|ternary('2', '')}}"
+
+- name: Create channel block query script
+  template:
+    src: "{{ pjroot }}/playbooks/ops/templates/blockquery.j2"
+    dest: "{{ pjroot }}/vars/run/blockquery.sh"
+    mode: +x
+
+- name: Place the blockquery.jq in the right place
+  copy:
+    src: "{{ pjroot }}/playbooks/ops/templates/blockquery.jq"
+    dest: "{{ pjroot }}/vars/run/blockquery.jq"
+
+- name: Run the block query script on cli container
+  command: >-
+    docker exec {{ CLINAME }} /vars/run/blockquery.sh
+
+- set_fact:
+    jsonVar: "{{ lookup('file', pjroot + '/vars/'+ CHANNEL_NAME+'_'+BLOCK_NUMBER+'_txs.json') | from_json }}"
+    newVar: []
+- name: Decode the chaincode operation arguments
+  set_fact:
+    newVar: >-
+      {{ newVar + [{'tx_id':item['tx_id'], 'chaincode_id':item['chaincode_id'], 'args': item['args']|map('b64decode')|list}] }}
+  with_items: "{{ jsonVar['txs'] }}"
+- name: Construct the new json document
+  set_fact:
+    newJSON: >-
+      {{ {'number': jsonVar['number'], 'block_hash': jsonVar['block_hash'], 'data_hash': jsonVar['data_hash'],
+          'previous_hash': jsonVar['previous_hash'], 'txs': newVar} }}
+- name: Produce the new file
+  copy:
+    dest: "{{ pjroot }}/vars/{{CHANNEL_NAME}}_{{BLOCK_NUMBER}}_txs.json"
+    content: "{{ newJSON | to_nice_json(indent=2) }}"
+- name: "Execution results"
+  debug:
+    msg: "Query results: ./vars/{{CHANNEL_NAME}}_{{BLOCK_NUMBER}}_txs.json"
+  tags: [print_action]

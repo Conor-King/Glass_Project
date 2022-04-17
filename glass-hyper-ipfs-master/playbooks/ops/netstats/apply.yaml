@@ -1,0 +1,64 @@
+---
+- name: set two values
+  set_fact:
+    LB: "{"
+    RB: "}"
+
+- name: Get current image date and time
+  command: >-
+    docker images hyperledgerlabs/minifab:latest --format 
+    "{{LB}}{{LB}}.ID{{RB}}{{RB}}   {{LB}}{{LB}}.CreatedAt{{RB}}{{RB}}"
+  register: theresult
+
+- name: Current Minifabric image ID and created at date time
+  debug:
+    msg: "{{ theresult.stdout }}"
+  tags: [print_action]
+
+- name: Check if cli container is running
+  command: >-
+    docker container ls -f name={{ CLINAME }} --format
+    '{{LB}}{{LB}} .Status {{RB}}{{RB}}'
+  register: clistatus
+
+- name: List all nodes
+  command: >-
+    docker ps -af network={{ NETNAME }} --format
+    '{{LB}}{{LB}} .Names {{RB}}{{RB}}|{{LB}}{{LB}} .Status {{RB}}{{RB}}'
+  register: nodelist
+
+- name: Quit
+  when: (clistatus.stdout_lines|length) == 0 and (nodelist.stdout_lines|length) == 0
+  block:
+    - name: Fabric network status
+      debug:
+        msg: "Network Status: 0%"
+      tags: [print_action]
+    - meta: end_play
+
+- name: Organize node status
+  set_fact:
+    nstatus: >-
+      {{ nstatus|default([]) + [item.split('|')[0][0:50] + ' : ' + item.split('|')[1]] }}
+  with_items: "{{ nodelist.stdout_lines }}"
+
+- name: Create node health query script
+  template:
+    src: "{{ pjroot }}/playbooks/ops/templates/stats.j2"
+    dest: "{{ pjroot }}/vars/run/stats.sh"
+    mode: +x
+
+- name: Run the health query script on cli container
+  command: >-
+    docker exec {{ CLINAME }} /vars/run/stats.sh
+  register: theresult
+
+- name: Docker node status
+  debug:
+    msg: "{{ nstatus }}"
+  tags: [print_multi]
+
+- name: "Fabric network peer and orderer node health status"
+  debug:
+    msg: "{{ theresult.stdout_lines }}"
+  tags: [print_multi]

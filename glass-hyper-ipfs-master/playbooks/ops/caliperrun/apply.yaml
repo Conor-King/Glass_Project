@@ -1,0 +1,81 @@
+---
+- name: Set up sdk release
+  set_fact:
+    sdk_release: "2.1.0"
+    caliper_release: "0.4.1"
+
+- name: Create apprun script
+  template:
+    src: "{{ pjroot }}/playbooks/ops/caliperrun/templates/networkconfig.j2"
+    dest: "{{ pjroot }}/vars/run/calipernetworkconfig.json"
+
+- name: "Check if benchmark config file exists"
+  stat:
+    path: "{{ pjroot }}/vars/run/caliperbenchmarkconfig.yaml"
+  register: bcfg
+
+- name: Generate bench mark configuration file only if there is none
+  when: bcfg.stat.exists == false
+  template:
+    src: "{{ pjroot }}/playbooks/ops/caliperrun/templates/benchmarkconfig.j2"
+    dest: "{{ pjroot }}/vars/run/caliperbenchmarkconfig.yaml"
+
+- name: Create caliper run script
+  template:
+    src: "{{ pjroot }}/playbooks/ops/caliperrun/templates/{{ item }}.j2"
+    dest: "{{ pjroot }}/vars/run/{{ item }}.sh"
+    mode: +x
+  with_items:
+  - 'caliperbind'
+  - 'caliperrun'
+
+- name: Change var file permission
+  command: >-
+    chown -R 1000:1000 {{ pjroot }}/vars
+
+- name: Check bond caliper image
+  command: >-
+    docker image ls -q hyperledger/caliper_fabric:{{ sdk_release }}
+  register: imagestatus
+
+- name: Produce image if caliper bond image does not exist
+  when: imagestatus.stdout_lines|length == 0
+  block:
+  - name: Run a container to bind fabric sdk
+    command: >-
+      docker run --network {{ NETNAME }} --name calipertester --hostname calipertester
+      --entrypoint /run/caliperbind.sh
+      -v {{ hostroot }}/vars/run:/run
+      hyperledger/caliper:{{ caliper_release }}
+
+  - name: Save the container as an image
+    command: >-
+      docker commit calipertester hyperledger/caliper_fabric:{{ sdk_release }}
+
+  - name: Remove the docker container
+    command: >-
+      docker rm -f calipertester
+
+- name: Launch caliper test
+  command: >-
+    docker run --network {{ NETNAME }} --name calipertester --hostname calipertester --rm
+    --entrypoint /hyperledger/caliper/workspace/run/caliperrun.sh
+    -e "ROOTPATH=/hyperledger/caliper/workspace/keyfiles"
+    -e "CALIPER-BENCHCONFIG=run/caliperbenchmarkconfig.yaml"
+    -e "CALIPER-NETWORKCONFIG=run/calipernetworkconfig.json"
+    -v /var/run/docker.sock:/var/run/docker.sock
+    -v {{ hostroot }}/vars:/hyperledger/caliper/workspace
+    hyperledger/caliper_fabric:{{ sdk_release }}
+  register: runresults
+
+- name: Caliper test run
+  when: runresults.rc != 0
+  debug:
+    msg: "{{ runresults.stderr_lines }}"
+  tags: [print_action]
+
+- name: Caliper test run
+  when: runresults.rc == 0
+  debug:
+    msg: "View results in vars/report.html"
+  tags: [print_action]

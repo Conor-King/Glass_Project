@@ -1,0 +1,17 @@
+#!/bin/bash
+# Script to instantiate chaincode
+{% include "envsetting.j2" %}
+
+{% if (CC_INIT_REQUIRED|lower) == 'true' %}
+peer chaincode invoke -o $ORDERER_ADDRESS --isInit \
+  --cafile $ORDERER_TLS_CA --tls -C {{ CHANNEL_NAME }} -n {{ CC_NAME }} \
+{% for anorg in peerorgs %}
+{%   set onepeer = allpeers|selectattr('org', 'equalto', anorg)|list|random %}
+  --peerAddresses {{ onepeer.url }}:{{ onepeer.port }} \
+  --tlsRootCertFiles /vars/keyfiles/peerOrganizations/{{ anorg }}/peers/{{ onepeer.fullname }}/tls/ca.crt \
+{% endfor %}
+{% if TRANSIENT_DATA != 'Cg==' %}
+  --transient '{{ TRANSIENT_DATA|b64decode|trim }}' \
+{% endif %}
+  -c '{"Args":[ {{ CC_PARAMETERS|b64decode|trim }} ]}' --waitForEvent
+{% endif %}

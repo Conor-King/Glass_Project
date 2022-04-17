@@ -1,0 +1,26 @@
+---
+- name: "Ensure explorer directory exists"
+  file:
+    path: "{{ pjroot }}/vars/explorer"
+    state: "directory"
+
+- name: "Process keys"
+  include_tasks: "{{ pjroot }}/playbooks/common/processkeys.yaml"
+
+- name: Create config file for the explorer
+  template:
+    src: "{{ pjroot }}/playbooks/ops/explorerup/templates/explorerconfig.j2"
+    dest: "{{ pjroot }}/vars/explorer/config.json"
+
+- name: Create connection profile for the explorer
+  template:
+    src: "{{ pjroot }}/playbooks/ops/explorerup/templates/explorerprofile.j2"
+    dest: "{{ pjroot }}/vars/explorer/{{ CHANNEL_NAME}}_profile.json"
+
+- name: setup volume and containers for docker
+  include_tasks: "dockerapply.yaml"
+  when: ISK8S == false
+
+- name: setup volume and containers for k8s
+  include_tasks: "k8sapply.yaml"
+  when: ISK8S == true

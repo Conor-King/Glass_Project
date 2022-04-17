@@ -1,0 +1,94 @@
+{
+  "name": "fabric-network",
+  "description": "Generated network configuration file",
+  "version": "0.1",
+  "client": {
+{% set pypeer=allpeers|random %}
+    "organization": "{{ pypeer.org }}",
+    "credentialStore": {
+      "path": "/tmp/hfc-kvs",
+      "cryptoStore": {
+        "path": "/tmp/hfc-cvs"
+      },
+      "wallet": "wallet-name"
+    }
+  },
+  "organizations": {
+{% for org in allorgs %}
+{%  set orgelements = allkeys.values() | selectattr("org", "equalto", org) | list %}
+    "{{org}}": {
+      "mspid": "{{ orgattrs[org].mspid }}",
+{%      set peers = allpeers | selectattr("org", "equalto", org) | list | sort(attribute='fullname') %}
+{%      if peers is defined and (peers|length) > 0 %}
+      "peers": [
+{%      for peer in peers %}
+        "{{peer.fullname}}"{{ '' if loop.last else ',' }}
+{%      endfor %}
+      ],
+{%      endif %}
+{%      set orderers = allorderers | selectattr("org", "equalto", org) | list | sort(attribute='fullname') %}
+{%      if orderers is defined and (orderers|length) > 0 %}
+      "orderers": [
+{%        for orderer in orderers %}
+        "{{orderer.fullname}}"{{ '' if loop.last else ',' }}
+{%        endfor %}
+      ],
+{%      endif %}
+      "users": {
+{%      set users = orgelements | selectattr("type", "equalto", "users") | list | sort(attribute='key') %}
+{%      for user in users %}
+        "{{user.key.split('@')[0]}}": {
+          "cert": "/{{ user.pkey.split('/')[0:6]|join('/') }}/signcerts/{{user.key}}-cert.pem",
+          "private_key": "/{{ user.pkey }}"
+        }{{ '' if loop.last else ',' }}
+{%      endfor %}
+      }
+    }{{ '' if loop.last else ',' }}
+{% endfor %}
+  },
+{% if allorderers|length >0 %}
+  "orderers": {
+{%   for item in allorderers %}
+    "{{item.fullname}}": {
+      "url": "{{ item.url }}:{{ item.port }}",
+      "grpcOptions": {
+        "grpc.ssl_target_name_override": "{{ item.fullname }}",
+        "grpc-max-send-message-length": 15
+      },
+      "tlsCACerts": {
+        "path": "/keyfiles/ordererOrganizations/{{ item.org }}/orderers/{{ item.fullname }}/tls/ca.crt"
+      }
+    }{{ '' if loop.last else ',' }}
+{%   endfor %}
+  },
+{% endif %}
+{% if allpeers|length >0 %}
+  "peers": {
+{%   for item in allpeers %}
+    "{{item.fullname}}": {
+      "url": "{{ item.url }}:{{ item.port }}",
+      "grpcOptions": {
+        "grpc.ssl_target_name_override": "{{ item.fullname }}",
+        "grpc-max-send-message-length": 15
+      },
+      "tlsCACerts": {
+        "path": "/keyfiles/peerOrganizations/{{ item.org }}/peers/{{ item.fullname }}/tls/ca.crt"
+      }
+    }{{ '' if loop.last else ',' }}
+{%   endfor %}
+  },
+{% endif %}
+  "certificateAuthorities": {
+{% for ca in allcas %}
+    "{{ ca.fullname }}": {
+      "url": "https://{{ ca.url }}:{{ ca.port }}",
+      "tlsCACerts": {
+        "path": "/keyfiles/{{ orgattrs[ca.org].certpath }}/{{ ca.org+'/ca/'+ca.fullname+'-cert.pem' }}"
+      },
+      "httpOptions": { "verify": "false" },
+      "caName": "{{ ca.name }}",
+      "registrar": { "enrollId": "admin", "enrollSecret": "{{ ca.adminPassword }}" }
+    }{{ '' if loop.last else ',' }}
+{% endfor %}
+  }
+}

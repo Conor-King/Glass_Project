@@ -1,0 +1,17 @@
+---
+- name: "Select an orderer node"
+  include_tasks: "{{ pjroot }}/playbooks/common/ordererselection.yaml"
+
+- name: Select a peer for channel query.
+  set_fact:
+    actingpeer: "{{ None }}"
+
+- name: Create channel update script
+  template:
+    src: "{{ pjroot }}/playbooks/ops/templates/channelupdate.j2"
+    dest: "{{ pjroot }}/vars/run/channelupdate.sh"
+    mode: +x
+
+- name: Run the channel update script on cli container
+  command: >-
+    docker exec {{ CLINAME }} /vars/run/channelupdate.sh
