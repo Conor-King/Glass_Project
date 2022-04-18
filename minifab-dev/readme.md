@@ -31,7 +31,9 @@ Delete functionality to be added soon, possibly by similar way that add is imple
 
 After this the only thing remianing is to populate the entities with actual unique ids and cids using the ipfs code. The method do do this is with a bash script which being developed. Thiss will make the populating simpler and more user-friendly. The script already have a method which gives the user the option to input and upload an asset to the ipfs. The generation of unique ids is with "github.com/google/uuid" see line 50 in ipfs/main.go. 
 
-To develop simply edit the main.go file in chaicodes/sample/go/main.go and copy it to /vars/chaincode/sample. You can edit directly in vars/chaincode but there is a chance to lose your code, for ex - if u execute ```minifab cleanup```. 
+### Develop suggestion
+simply edit the main.go file in chaicodes/sample/go/main.go and copy it to /vars/chaincode/sample. You can edit directly in vars/chaincode but there is a chance to lose your code, for ex - if u execute ```minifab cleanup```. 
+
 ```cp chaincodes/strings/go/main.go vars/chaincode/strings/go/``` - copy and replace the main.go file 
 
 ## To Do:
