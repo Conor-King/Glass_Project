@@ -44,4 +44,5 @@ To develop simply edit the main.go file in chaicodes/sample/go/main.go and copy 
 
 ## Relevant Links
 https://github.com/hyperledger-labs/minifabric/blob/main/docs/README.md - Minifab documentation
-github.com/google/uui - Unique Id generation
+
+https://github.com/google/uuid - Unique Id generation
