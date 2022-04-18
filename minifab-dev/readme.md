@@ -17,8 +17,9 @@
 6. ```minifab initialize -p '"init","a","uniqueid1:cid1 uniqueid2:cid2","b","uniqueid3:cid3 uniqueid4:cid4"'``` - create 2 entities and associate them with two examlpe uniqueids:cids
 7. ```minifab discover```
 8. ```minifab invoke -p '"query", "a"'``` //expected output payload: uniqueid1:cid1 uniqueid2:cid2
-9. ```minifab invoke -p '"invoke","a","b","uniqueid2"'``` - transfer asset with uniqueid2 from a to b
-10. ```minifab invoke -p '"invoke","add","a","exampleid:examplecid"'``` - add asset to "a" entity with exampleid:examplecid
+9. ```minifab invoke -p '"invoke","a","b","uniqueid2"'``` - **transfer** asset with uniqueid2 from a to b
+10. ```minifab invoke -p '"invoke","add","a","uniqueid:examplecid"'``` - **add** asset to "a" entity with exampleid:examplecid
+11. ```minifab invoke -p '"invoke","delete","a","uniqueid"'``` - **delete** an asset from "a" entity with uniqueid:examplecid
 
 ## Exlanation
 
@@ -38,14 +39,9 @@ simply edit the main.go file in chaicodes/sample/go/main.go and copy it to /vars
 
 ## To Do:
 - Query the ledger on uuid
-- Delete an asset pair from an entity
 - Populate an entity with real uuid:cid pairs
-- Add an entity
-- Delete an entity
 
 This should be completed untill Tuesday.
-
-
 
 ## Relevant Links
 https://github.com/hyperledger-labs/minifabric/blob/main/docs/README.md - Minifab documentation
