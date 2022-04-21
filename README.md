@@ -72,4 +72,6 @@ Digital database which every member can supplement the data stored there. The da
 -Anonymous
 -Single Source of truth
 
+## Acknowledgement
+We would like to express our sincere gratitude to several individuals and organizations for supporting us throughout our project. First, We wish to express our sincere gratitude to our supervisor, Professor Collins, for his enthusiasm, patience, insightful comments, helpful information, and practical advice. Moreover, we would like to express our gratitude to Dr. Sarwar Sayeed and to Dr. Owen Lo. 
 
