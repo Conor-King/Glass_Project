@@ -7,11 +7,12 @@
 - ```PATH="$(pwd):$PATH"``` - add minifab path to your path tempoarily (execute each time you develop)
 
 ### Steps
-1. ```minifab up``` - bring up the network (first time it takes around 3-4 mins)
+1. ```minifab up -o france.eu.com``` - bring up the network (first time it takes around 3-4 mins)
 2. copy the "strings" chaincode from ```/chaincodes``` folder to ```/vars/chaincode```
-3. ```minifab install -v 1.01 -n strings``` - install chaincode named stings, specify higher version each time you want to update the chaincode
-4. ```minifab approve```
-5. ```minifab commit```
+3. Make sure the spec.yaml file is at the root folder for the minifab tool
+4. ```minifab install -v 1.01 -n strings``` - install chaincode named stings, specify higher version each time you want to update the chaincode
+5. ```minifab approve```
+6. ```minifab commit```
 7. ```minifab initialize -p '"init","a","uniqueid1:cid1 uniqueid2:cid2","b","uniqueid3:cid3 uniqueid4:cid4"'``` - create 2 entities and associate them with two examlpe uniqueids:cids
 8. ```minifab discover```
 9. ```minifab invoke -p '"query", "a"'``` //expected output payload: uniqueid1:cid1 uniqueid2:cid2
@@ -30,7 +31,7 @@ Delete functionality to be added soon, possibly by similar way that add is imple
 After this the only thing remianing is to populate the entities with actual unique ids and cids using the ipfs code. The method do do this is with a bash script which being developed. Thiss will make the populating simpler and more user-friendly. The script already have a method which gives the user the option to input and upload an asset to the ipfs. The generation of unique ids is with "github.com/google/uuid" see line 50 in ipfs/main.go. 
 
 ## Connect Minifab with IPFS
-1. Make sure the network is up and running
+1. Make sure the network is up and running - make sure you define the starting org with -o
 2. Open a new terminal and start IPFS ```ipfs daemon```
 3. ```minifab install -v 1.02 -n strings``` - install the chaincode, but make sure that you **specify higher version** 
 4. ```minifab approve```
