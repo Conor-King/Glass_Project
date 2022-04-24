@@ -27,13 +27,7 @@ type TimeSeriesDatum struct {
 }
 
 
-
-
 //cypto stuff
-
-
-
-
 var cbytes = []byte{35, 46, 57, 24, 85, 35, 24, 74, 87, 35, 88, 98, 66, 32, 14, 05}
 // This should be in an env file in production
 const MySecret string = "abc&1*~#^2^#s0^=)^^7%b34"
@@ -53,6 +47,7 @@ func Decode(s string) []byte {
 
 
 // Decrypt method is to extract back the encrypted text
+//input:plian text string and  chiper code
 func Decrypt(text, MySecret string) (string, error) {
  block, err := aes.NewCipher([]byte(MySecret))
  if err != nil {
@@ -68,6 +63,7 @@ func Decrypt(text, MySecret string) (string, error) {
 
 
 // Encrypt method is to encrypt or hide any classified text
+//plian text string and  chiper code
 func Encrypt(text, MySecret string) (string, error) {
  block, err := aes.NewCipher([]byte(MySecret))
  if err != nil {
@@ -80,8 +76,10 @@ func Encrypt(text, MySecret string) (string, error) {
  return Encode(cipherText), nil
 }
 
-
-
+//The function will add data to the IPFS.
+//name_cal: Name of the individual 
+//address_cal: individual home address 
+//id_num_cal: the unique id NINO
 func IPFS_add(name_cal string, address_cal string, id_num_cal string) {
 	//
 	// Connect to your local IPFS deamon running in the background.
@@ -125,16 +123,7 @@ func IPFS_add(name_cal string, address_cal string, id_num_cal string) {
 		os.Exit(1)
 	}
 
-	// ...so we convert it to a string by passing it through
-	// a buffer first. A 'costly' but useful process.
-	// https://golangcode.com/convert-io-readcloser-to-a-string/
-	//buf := new(bytes.Buffer)
-	//buf.ReadFrom(data)
-	//newStr := buf.String()
-
-	//res := &TimeSeriesDatum{}
-	//json.Unmarshal([]byte(newStr), &res)
-	//fmt.Println(res)
+		
 }
 
 func main() {
@@ -196,5 +185,6 @@ func main() {
 	}
 
 }
+
 
 
