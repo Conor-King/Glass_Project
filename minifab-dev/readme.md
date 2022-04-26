@@ -8,7 +8,7 @@
 
 ### Steps
 1. ```minifab up -o france.eu.com``` - bring up the network (first time it takes around 3-4 mins)
-2. copy the "strings" chaincode from ```/chaincodes``` folder to ```/vars/chaincode```
+2. copy the "strings" chaincode from ```/chaincodes``` folder to ```/vars/chaincode``` ```cp -r chaincodes/strings vars/chaincode```
 3. Make sure the spec.yaml file is at the root folder for the minifab tool
 4. ```minifab install -v 1.01 -n strings``` - install chaincode named stings, specify higher version each time you want to update the chaincode
 5. ```minifab approve```
