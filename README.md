@@ -2,7 +2,7 @@ Group project: Glass research project, a blockchain network that shares EU citiz
 # What is GLASS
 EU research project which aims to establish a common infrastructure at the European level to provide shared public storage for documentation, files and data, and hosting services to cross-sector organizations.
 
-GLASS aims to design and deploy a blockchain-based distributed environment and deliver the operational framework for sharing common services including
+GLASS aims to design and deploy a blockchain-based distributed environment and deliver the operational framework for sharing common services including:
 
 * the definition of the resources requirements
 * the incorporation of the Interplanetary File System (IPFS) in the GLASS architecture
