@@ -20,13 +20,13 @@
 11. ```minifab invoke -p '"invoke","add","a","uniqueid:examplecid"'``` - **add** asset to "a" entity with exampleid:examplecid
 12. ```minifab invoke -p '"invoke","delete","a","uniqueid"'``` - **delete** an asset from "a" entity with uniqueid:examplecid
 
-## Exlanation
+## Explanation
 
 The Steps above are to get familiar with the workflow with minifab and the chaincode. The values are for example puprose, as the conncetion between HLF and IPFS is still under development. 
 
 After many different approaches, the only way to add asset  pair to an entity was by using the invoke method in the chaincode provided, with some flow control,  as if you try to make a new method, for eaxmple "add" medthod the transaction is invalid, as the chaincode which this chaincode is based on accepts only invoke as a valid way to modify the ledger. Not the most elegant way to implement an add functionality, but it works. 
 
-Delete functionality to be added soon, possibly by similar way that add is implemented. See line 89 in chaincodes/strings/go/main.go
+Delete functionality is based on the way that add is implemented. See line 89 in chaincodes/strings/go/main.go
 
 After this the only thing remianing is to populate the entities with actual unique ids and cids using the ipfs code. The method do do this is with a bash script which being developed. Thiss will make the populating simpler and more user-friendly. The script already have a method which gives the user the option to input and upload an asset to the ipfs. The generation of unique ids is with "github.com/google/uuid" see line 50 in ipfs/main.go. 
 
@@ -41,6 +41,14 @@ After this the only thing remianing is to populate the entities with actual uniq
 
 You should now have a ledger with uuid:cid pairs. You can add, delete and trasfer between the entities with the commands explained above.
 
+
+## Encryption
+An encryption function has been implemented in the program. The main goal of the function is to store encrypted data on the IPFS network to protect PPI and meet standards. The encryption function uses the asymmetric encryption method, AES. Moreover, a decryption function is implemented as well. Symmetric key-based encryption might not be the best for the project, however, in a future version, asymmetric key encryption can be implemented with a rolling key.
+
+## System Flow Chart 
+
+![visual representation of our System Flow](https://github.com/Conor-King/Glass_Project/blob/main/Teams_Files/flow_chart.png)
+The flow chart represent the how the program works.
 ## Script
 The scrip is written in bash, there is a lot to improve there. Possible feauteres to be added :
 - Chaincode install, approve and commit in one command. 
