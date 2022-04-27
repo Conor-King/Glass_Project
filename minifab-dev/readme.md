@@ -56,12 +56,9 @@ The scrip is written in bash, there is a lot to improve there. Possible feautere
 - Write down all the newly added asssets to a file
 
 ### Develop suggestion
-simply edit the main.go file in chaicodes/sample/go/main.go and copy it to /vars/chaincode/sample. You can edit directly in vars/chaincode but there is a chance to lose your code, for ex - if u execute ```minifab cleanup```. 
+Simply edit the main.go file in chaicodes/sample/go/main.go and copy it to /vars/chaincode/sample. You can edit directly in vars/chaincode but there is a chance to lose your code, for ex - if u execute ```minifab cleanup```. 
 
 ```cp chaincodes/strings/go/main.go vars/chaincode/strings/go/``` - copy and replace the main.go file 
-
-## To Do:
-- Query the ledger on uuid
 
 ## Relevant Links
 https://github.com/hyperledger-labs/minifabric/blob/main/docs/README.md - Minifab documentation

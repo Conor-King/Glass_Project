@@ -14,7 +14,7 @@ A peer-to-peer hypermedia protocol designed to preserve and grow humanity's know
 
 
 # Distributed Ledger
-At the heart of a blockchain network is a distributed ledger that records all the transactions that take place on the network. The information recorded to a blockchain is append-only, using cryptographic techniques that guarantee that once a transaction has been added to the ledger it cannot be modified. It’s why blockchains are sometimes described as systems of proof
+At the heart of a blockchain network is a distributed ledger that records all the transactions that take place on the network. The information recorded to a blockchain is append-only, using cryptographic techniques that guarantee that once a transaction has been added to the ledger it cannot be modified. It’s why blockchains are sometimes described as systems of proof.
 
 # Smart Contracts
 To support the consistent update of information — and to enable a whole host of ledger functions (transacting, querying, etc) — a blockchain network uses smart contracts to provide controlled access to the ledger. smart contracts  to interact with the channel ledger. Smart contracts contain the business logic that governs assets on the blockchain ledger. Applications run by members of the network can invoke smart contracts to create assets on the ledger, as well as change and transfer those assets. Applications also query smart contracts to read data on the ledger. Hyperledger Fabric users often use the terms smart contract and chaincode interchangeably.  Chaincode can be implemented in several programming languages. Currently, Go, Node.js, and Java chaincode are supported. In general, a smart contract defines the transaction logic that controls the lifecycle of a business object contained in the world state. It is then packaged into a chaincode which is then deployed to a blockchain network. Think of smart contracts as governing transactions, whereas chaincode governs how smart contracts are packaged for deployment.
@@ -66,10 +66,10 @@ Self-sovereign identity (SSI) is a term used to describe the digital movement th
 Digital database which every member can supplement the data stored there. The data is stored locally on each machine not on a centralized cloud ( decentral peer-to-peer network). Mining verifies the data and makes DLT transparent, safe and decentral. Every blockchain is a form of DLT but not every DLT is blockchain. Nodes of the DLT are located on different locations.
 
 ## Characteristics of DLT
--Immutable
--Transparent
--Anonymous
--Single Source of truth
+* Immutable
+* Transparent
+* Anonymous
+* Single Source of truth
 
 
 ## System architecture
@@ -78,7 +78,7 @@ Digital database which every member can supplement the data stored there. The da
 
 The above diagram is a visual representation of our architecture. 
 
-### Limitation of the architecture:
+##### Limitation of the architecture:
 The system is not truly a distributed system because if our main IPFS or our main HLF goes down the whole system is down. Moreover, the system has a careerist in subordinate network design. This can be improved in a further version. A possible improvement to create the system fully decentralized could be based on current DEFI technology. Secondly, an alternative solution could be using a redundant connection from our application to the network. 
 
 ## Acknowledgement
