@@ -4,7 +4,7 @@ EU research project which aims to establish a common infrastructure at the Europ
 
 GLASS aims to design and deploy a blockchain-based distributed environment and deliver the operational framework for sharing common services including:
 
-* the definition of the resources requirements
+* the definition of the resource requirements
 * the incorporation of the Interplanetary File System (IPFS) in the GLASS architecture
 * the design, development and deployment of the distributed ledger
 * seamless identity management
