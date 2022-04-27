@@ -81,6 +81,9 @@ Digital database which every member can supplement the data stored there. The da
 ![jpeg](http://github.com/Conor-King/Glass_Project/blob/main/Teams_Files/system_architecture.jpeg)
 
 
+![demo raw jpeg](http://github.com/Conor-King/Glass_Project/blob/main/Teams_Files/system_architecture.jpeg?raw=true)
+
+
 
 
 ## Acknowledgement
